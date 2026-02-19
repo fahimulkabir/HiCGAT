@@ -1,4 +1,4 @@
-name: hicgnn-gpu
+name: hicgat
 channels:
   - conda-forge
   - defaults
