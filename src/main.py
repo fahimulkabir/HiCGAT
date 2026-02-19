@@ -9,7 +9,7 @@ from scipy.stats import spearmanr
 
 from .normalization import preprocess_hic_file, kr_normalization
 from .embeddings import generate_embeddings
-from .utils import prepare_tensors, contact_to_distance, write_pdb
+from .utils import prepare_tensors, contact_to_distance, write_pdb, set_seed
 from .models import UniversalHiCGNN
 
 def train_hic_gnn(filepath, device_name="cuda"):
@@ -51,8 +51,14 @@ def train_hic_gnn(filepath, device_name="cuda"):
     best_alpha = None
     
     print(" -> Starting Training...")
-    
+       
+    # Auto-detect input dimension
+    input_dim = embeddings.shape[1]
+
     for alpha in conversions:
+        # Seeding for reproducibility
+        set_seed(42)
+
         model = UniversalHiCGNN().to(device)
         optimizer = optim.Adam(model.parameters(), lr=0.001)
         criterion = nn.MSELoss()
@@ -93,7 +99,7 @@ def train_hic_gnn(filepath, device_name="cuda"):
                 best_struct = struct.cpu().numpy()
                 best_model_state = model.state_dict()
                 best_alpha = alpha
-
+    
     # --- Stop Timer ---
     end_time = time.time() 
     total_time = end_time - start_time
