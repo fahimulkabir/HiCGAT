@@ -1,5 +1,7 @@
 # HiC-GNN-for-GPU: A Generalizable Model for 3D Chromosome Reconstruction Using Graph Convolutional Neural Networks (With GPU)
-------------------------------------------------------------------------------------------------------------------------------------
+
+---
+
 Refactored from the original academic code, this version is designed for **universal compatibility**, running seamlessly on everything from standard CPUs to bleeding-edge GPUs (e.g., NVIDIA Blackwell, H100, RTX 6000 Ada) without dependency conflicts. It replaces deprecated libraries (`LINE`,`ge`, `tensorflow 1.x`) with modern **PyTorch** and **Node2Vec**. Replaced external R scripts with a native Python implementation of Knight-Ruiz (KR) normalization, eliminating complex environment setups
 
 ## 📂 Repository Structure
@@ -25,17 +27,20 @@ HiC-GNN-for-GPU/
 We recommend using **Conda** to manage dependencies.
 
 ### 1. Clone the Repository
+
 ```bash
-git clone https://github.com/fahimulkabir/HiC-GNN-for-GPU.git
-cd HiC-GNN-for-GPU
+git clone https://github.com/fahimulkabir/HiCGAT.git
+cd HiCGAT
 ```
 
 ### 2. Create the Environment
+
 Create the `environment.yml` file with the following content (or use the file provided in the repo):
 
 **`environment.yml`**
+
 ```yaml
-name: hicgnn-gpu
+name: hicgat
 channels:
   - conda-forge
   - defaults
@@ -48,32 +53,40 @@ dependencies:
   - scikit-learn
   - pip
   - pip:
-    - node2vec
+      - --extra-index-url https://download.pytorch.org/whl/cu128
+      - torch
+      - torchvision
+      - torch-geometric
 ```
 
 Run the creation command:
+
 ```bash
 conda env create -f environment.yml
-conda activate hicgnn-gpu
+conda activate hicgat
 ```
 
 ### 3. Install PyTorch (Hardware Specific)
+
 Since drivers vary between servers (e.g., H100 vs. RTX 4090), install the version of PyTorch that matches your hardware:
 
 **Option A: Standard GPUs (H100, A100, RTX 3090/4090)**
-*For systems with CUDA 11.8 - 12.x drivers.*
+_For systems with CUDA 11.8 - 12.x drivers._
+
 ```bash
 pip install torch torchvision --index-url https://download.pytorch.org/whl/cu121
 ```
 
 **Option B: Bleeding Edge GPUs (Blackwell / RTX 6000 Ada)**
-*For new systems requiring CUDA 13.0+.*
+_For new systems requiring CUDA 13.0+._
+
 ```bash
-pip install torch torchvision --pre --extra-index-url https://download.pytorch.org/whl/cu130
+pip install torch torchvision --pre --extra-index-url https://download.pytorch.org/whl/cu128
 ```
 
 **Option C: CPU Only**
-*For laptops or non-GPU servers.*
+_For laptops or non-GPU servers._
+
 ```bash
 pip install torch torchvision
 ```
@@ -81,6 +94,7 @@ pip install torch torchvision
 ## 🚀 Usage
 
 ### Training & Prediction
+
 To generate a 3D structure from a contact map, run the main module. The script automatically handles normalization, embedding generation, and training.
 
 ```bash
@@ -89,6 +103,7 @@ python -m src.main data/GM12878_1mb_chr19_list.txt
 ```
 
 ### Benchmarking
+
 To test the speed and accuracy of your setup across multiple runs:
 
 ```bash
@@ -96,11 +111,13 @@ python run_benchmark.py
 ```
 
 ## 📊 Output Files
+
 After a successful run, the following files are saved in the `Outputs/` directory:
 
-* **`*_structure.pdb`**: The predicted 3D genome structure. Capable of being visualized in PyMOL, UCSF Chimera, or other molecular viewers.
-* **`*_weights.pt`**: The trained PyTorch model weights.
-* **Logs**: Training logs containing the Loss and Distance Spearman Correlation Coefficient (dSCC) for the optimal Alpha parameter.
+- **`*_structure.pdb`**: The predicted 3D genome structure. Capable of being visualized in PyMOL, UCSF Chimera, or other molecular viewers.
+- **`*_weights.pt`**: The trained PyTorch model weights.
+- **Logs**: Training logs containing the Loss and Distance Spearman Correlation Coefficient (dSCC) for the optimal Alpha parameter.
 
 ## ⚖️ License
+
 Distributed under the MIT License. See `LICENSE` for more information.
