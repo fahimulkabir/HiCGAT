@@ -15,4 +15,4 @@ dependencies:
       - --extra-index-url https://download.pytorch.org/whl/cu128
       - torch
       - torchvision
-      - node2vec
+      - torch-geometric
